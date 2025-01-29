@@ -1,0 +1,42 @@
+.analytics-container {
+    padding: 20px;
+  }
+  
+  .analytics-summary {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  
+  .analytics-card {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 23%;
+    text-align: center;
+  }
+  
+  .analytics-icon {
+    font-size: 40px;
+    margin-right: 15px;
+  }
+  
+  .analytics-chart {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .analytics-card h3,
+  .analytics-card p {
+    margin: 0;
+  }
+  
+  .analytics-chart h2 {
+    margin-bottom: 20px;
+  }
+  

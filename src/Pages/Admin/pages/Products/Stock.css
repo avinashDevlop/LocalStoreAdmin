@@ -1,0 +1,60 @@
+/* Styles for editable inputs */
+.editable-input {
+    width: 100px;
+    padding: 4px 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  /* Specific styling for price input */
+  .price-input {
+    width: 80px;
+  }
+  
+  /* Specific styling for quantity input */
+  .quantity-input {
+    width: 60px;
+    margin-right: 8px;
+  }
+  
+  /* Styles for editable select dropdown */
+  .editable-select {
+    padding: 4px 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+  }
+
+  .categoryProductCount {
+    font-size: 0.85rem; /* Adjust the font size */
+    font-weight: bold;  /* Make it stand out */
+    color: #555;        /* Neutral color, can be changed as needed */
+    background-color: #ffc8a8; /* Light gray background */
+    border-radius: 12px; /* Rounded edges */
+    padding: 2px 6px;    /* Padding for better spacing */
+    margin-left: 8px;    /* Space between the category name and the count */
+    display: inline-block; /* Ensure it aligns properly inside the button */
+  }   
+  
+/* Thumb (unchecked state) */
+.switch-thumb-unchecked {
+  background-color: red !important;
+}
+
+/* Track (unchecked state) */
+.switch-track-unchecked {
+  background-color: red !important;
+}
+
+/* Thumb (checked state) */
+.switch-thumb-checked {
+  background-color: green !important;
+}
+
+/* Track (checked state) */
+.switch-track-checked {
+  background-color: green !important;
+}

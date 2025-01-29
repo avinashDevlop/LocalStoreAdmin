@@ -1,0 +1,11 @@
+/* Simplified styles for the LocalStore heading */
+.localstore-header {
+    text-align: center;
+    margin-bottom: 20px;  /* Adjust the space below the header */
+  }
+  
+  .localstore-header h1 {
+    font-size: 2rem;  /* Standard font size */
+    font-weight: bold;
+    color: #333;  /* Dark gray color for the text */
+  }

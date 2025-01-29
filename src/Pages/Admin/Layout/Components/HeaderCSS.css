@@ -1,0 +1,80 @@
+/* Header.css */
+.link {
+    text-decoration: none;
+  }
+  
+  /* Add this CSS to style the active link, if needed */
+  .link.active {
+    font-weight: bold; /* Optionally, make the active link bold or apply other styles */
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4D44B5;
+    color: white;
+    padding: 10px;
+    border-bottom: 1px solid rgb(120, 120, 228);
+    width: 100%;
+  }
+  .title{
+    font-size: 20px;
+    padding-right: 18px;
+  }
+  .left, .right {
+    display: flex;
+    align-items: center;
+  }
+  .icon1 {
+    cursor: pointer;
+    font-size: 30px;
+  }
+  .icon2{
+    margin-right: 30px;
+    cursor: pointer;
+    font-size:x-large;
+  }
+  .dateTime{
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+  }
+  .liveDot {
+    animation: blink 1s infinite; /* Adjust the animation duration as needed */
+    color: rgb(0, 255, 0);
+    margin-bottom: 2px;
+    padding-right: 4px;
+  }
+  @keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  
+  .loader2 {
+    width: 17px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #ffca38;
+    display: grid;
+    animation: l22-0 25s infinite linear;
+  }
+  .loader2:before,
+  .loader2:after {
+    content: "";
+    grid-area: 1/1;
+    margin: 15%;
+    border-radius: 50%;
+    background: inherit;
+    transform: rotate(0deg) translate(150%);
+    animation: l22 2s infinite;
+  }
+  .loader2:after {
+    animation-delay: -.5s
+  }
+  @keyframes l22-0 {
+    100% {transform: rotate(1turn)}
+  }
+  @keyframes l22 {
+    100% {transform: rotate(1turn) translate(150%)}
+  }

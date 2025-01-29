@@ -1,0 +1,54 @@
+/* DashBoardCSS.css */
+.Layout{
+    overflow: hidden;
+    height: 100vh;
+  }
+  .dashboard-container h3 {
+    color: #303972;
+    padding: 15px;
+    font-size: 30px;
+  }
+  
+  .dashboard-container h3 span {
+    color: #2F9C09;
+    font-size: 23px;
+  }
+  
+  .dashboard-container {
+    display: flex;
+    flex-flow: row;
+    height: 89.5vh;
+  }
+  
+  .dashboard-content {
+    width: 100%;
+    background-color: #F3F4FF;
+    flex: 1;
+    overflow-x: auto;
+  }
+  /* For Webkit browsers (Chrome, Safari, newer versions of Opera) */
+  .dashboard-content::-webkit-scrollbar {
+    width: 2px; /* Width of the entire scrollbar */
+  }
+  
+  .dashboard-content::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color of the track */
+  }
+  
+  .dashboard-content::-webkit-scrollbar-thumb {
+    background-color: rgb(169, 169, 248); /* Color of the scroll thumb */
+  }
+  
+  
+  ::-webkit-scrollbar {
+    width: 5px; /* Width of the entire scrollbar */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color of the track */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: rgb(169, 169, 248); /* Color of the scroll thumb */
+  }
+  
