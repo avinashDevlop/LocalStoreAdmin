@@ -15,6 +15,7 @@ import AppBanner from "./Pages/Admin/pages/AppSettings/AppBanner"
 import CatogeryImg from "./Pages/Admin/pages/AppSettings/CatogeryImages"
 
 import NewOrders from "./Pages/Admin/pages/Orders/NewOrders";
+import AcceptedOrders from "./Pages/Admin/pages/Orders/AcceptedOrders"
 
 import AddDeliveryPartner from "./Pages/Admin/pages/DeliveryPartner/AddDeliveryPartner";
 import DeliveryPartner from "./Pages/Admin/pages/DeliveryPartner/DeliveryPartner";
@@ -53,6 +54,7 @@ useEffect(() => {
                <Route path="AdminShopBanner" element={<AppBanner />} />
                <Route path="AdminCatogeryImg" element={<CatogeryImg />} />
                <Route path="NewOrders" element={<NewOrders />} />
+               <Route path="AcceptedOrders" element={<AcceptedOrders />} />
                <Route path="AddDeliveryPartner" element={<AddDeliveryPartner />} />
                 <Route path="DeliveryPartner" element={<DeliveryPartner />} />
 

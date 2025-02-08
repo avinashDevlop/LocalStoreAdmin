@@ -36,6 +36,7 @@ const ImageGallery = () => {
     { value: "Health-wellness", label: "Health & Wellness" },
     { value: "Stationery", label: "Stationery & Office Supplies" },
     { value: "Electronics", label: "Electronics & Accessories" },
+    { value: "Mobile-accessories", label: "Mobile Accessories" },
     { value: "Home-decor", label: "Home Decor" },
     { value: "Toys-games", label: "Toys & Games" },
     { value: "Kitchen-essentials", label: "Kitchen Essentials" },
@@ -54,7 +55,7 @@ const ImageGallery = () => {
     { value: "Hardware-tools", label: "Hardware & Tools" },
     { value: "Fitness-equipment", label: "Fitness Equipment" },
     { value: "Office-furniture", label: "Office Furniture" },
-  ];
+  ];  
 
   const handleImageUpload = (event, category) => {
     const file = event.target.files[0];

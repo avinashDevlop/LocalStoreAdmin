@@ -1,76 +1,50 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Package, Truck, Clock, MapPin, CreditCard } from "lucide-react";
-import assignOrderToDeliveryPartner from './assignOrderToDeliveryPartner';
-// import api from "../../../../api";
+import { Package, Truck, Clock, MapPin, CreditCard, User } from "lucide-react";
 
 const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
-    case 'order placed':
-      return '#FFA000'; // Amber for order placed
-    case 'order confirmed':
-      return '#1976D2'; // Blue for order confirmed
-    case 'picking items':
-      return '#FF9800'; // Orange for picking items
-    case 'order packed':
-      return '#9C27B0'; // Purple for order packed
-    case 'out for delivery':
-      return '#4CAF50'; // Green for out for delivery
-    case 'near you':
-      return '#00ACC1'; // Cyan for near your location
-    case 'delivered':
-      return '#2E7D32'; // Dark green for delivered
+    case 'accepted':
+      return '#1976D2'; // Blue for accepted
+    case 'in progress':
+      return '#FF9800'; // Orange for in progress
+    case 'preparing':
+      return '#9C27B0'; // Purple for preparing
+    case 'ready for pickup':
+      return '#4CAF50'; // Green for ready
+    case 'completed':
+      return '#2E7D32'; // Dark green for completed
     default:
       return '#757575'; // Grey for unknown status
   }
 };
 
-const OrderDetailsDialog = () => {
+const AcceptedOrdersDialog = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [deliveryPartners, setDeliveryPartners] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-     // Memoize the assignOrder function
-  const assignOrder = useCallback(async (order) => {
+
+  const fetchDeliveryPartnerInfo = async (deliveryPartnerId) => {
     try {
-      const success = await assignOrderToDeliveryPartner(order);
-      if (success) {
-        console.log('Order assigned to delivery partner successfully');
-        await fetch(
-          `https://facialrecognitiondb-default-rtdb.firebaseio.com/Orders/NewOrders/${order.orderId}.json`,
-          {
-            method: 'PATCH',
-            body: JSON.stringify({
-              status: 'order shared'
-            })
-          }
-        );
-        return true;
+      const response = await fetch(
+        `https://facialrecognitiondb-default-rtdb.firebaseio.com/Accounts/DeliveryPartner/${deliveryPartnerId}/profile/personalInfo.json`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      console.log('Failed to assign order to delivery partner');
-      return false;
+      const data = await response.json();
+      return data;
     } catch (error) {
-      console.error("Error assigning order:", error);
-      return false;
+      console.error(`Error fetching delivery partner info for ${deliveryPartnerId}:`, error);
+      return null;
     }
-  }, []);
+  };
 
-  // Memoize the checkAndAssignOrders function
-  const checkAndAssignOrders = useCallback(async (orders) => {
-    const unassignedOrders = orders.filter(
-      order => order.status?.toLowerCase() === 'order placed'
-    );
-
-    for (const order of unassignedOrders) {
-      await assignOrder(order);
-    }
-  }, [assignOrder]);
-
-  // Memoize the fetchOrders function
-  const fetchOrders = useCallback(async () => {
+  const fetchAcceptedOrders = useCallback(async () => {
     try {
-      const response = await fetch('https://facialrecognitiondb-default-rtdb.firebaseio.com/Orders/NewOrders.json');
+      const response = await fetch('https://facialrecognitiondb-default-rtdb.firebaseio.com/Orders/AcceptedOrders.json');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -86,41 +60,47 @@ const OrderDetailsDialog = () => {
         orderId: key,
       }));
 
+      // Fetch delivery partner information for each order
+      const deliveryPartnersInfo = {};
+      await Promise.all(
+        formattedOrders.map(async (order) => {
+          if (order.deliveryPartnerId) {
+            const partnerInfo = await fetchDeliveryPartnerInfo(order.deliveryPartnerId);
+            if (partnerInfo) {
+              deliveryPartnersInfo[order.deliveryPartnerId] = partnerInfo;
+            }
+          }
+        })
+      );
+
+      setDeliveryPartners(deliveryPartnersInfo);
+
       setOrders(formattedOrders);
-      
-      // Check and assign any unassigned orders
-      await checkAndAssignOrders(formattedOrders);
-      
       setError(null);
     } catch (error) {
-      console.error("Error fetching orders:", error);
-      setError("Failed to load orders. Please try again later.");
+      console.error("Error fetching accepted orders:", error);
+      setError("Failed to load accepted orders. Please try again later.");
     } finally {
       setLoading(false);
     }
-  }, [checkAndAssignOrders]);
+  }, []);
 
-  // Set up real-time listener for new orders
   useEffect(() => {
-    // Initial fetch
-    fetchOrders();
+    fetchAcceptedOrders();
     
-    // Set up Firebase listener for real-time updates
-    const ordersRef = new EventSource('https://facialrecognitiondb-default-rtdb.firebaseio.com/Orders/NewOrders.json');
+    const ordersRef = new EventSource('https://facialrecognitiondb-default-rtdb.firebaseio.com/Orders/AcceptedOrders.json');
     
     ordersRef.onmessage = (event) => {
       if (event.data) {
-        fetchOrders(); // Fetch and process any new orders
+        fetchAcceptedOrders();
       }
     };
 
     return () => {
-      ordersRef.close(); // Cleanup on unmount
+      ordersRef.close();
     };
-  }, [fetchOrders]); 
+  }, [fetchAcceptedOrders]);
 
-
-  // Rest of the component remains the same but with loading and error states handled
   if (loading) {
     return (
       <div className="container py-4">
@@ -143,51 +123,32 @@ const OrderDetailsDialog = () => {
     );
   }
 
-
   const handleOpenDialog = (order) => {
     setSelectedOrder(order);
     setShowDialog(true);
   };
 
-    // No orders message
-    if (!orders.length) {
-      return (
-        <div className="container py-4">
-          <h4 className="mb-4">
-            <span className="fs-4 fw-medium">Product /</span> New Orders
-          </h4>
-          <div className="card shadow-sm">
-            <div className="card-body text-center py-5">
-              <Package size={48} className="text-muted mb-3" />
-              <h5 className="text-muted">No Orders Available</h5>
-              <p className="text-muted mb-0">There are currently no new orders to display.</p>
-            </div>
+  if (!orders.length) {
+    return (
+      <div className="container py-4">
+        <h4 className="mb-4">
+          <span className="fs-4 fw-medium">Product /</span> Accepted Orders
+        </h4>
+        <div className="card shadow-sm">
+          <div className="card-body text-center py-5">
+            <Package size={48} className="text-muted mb-3" />
+            <h5 className="text-muted">No Accepted Orders</h5>
+            <p className="text-muted mb-0">There are currently no accepted orders to display.</p>
           </div>
         </div>
-      );
-    }
-  
-    if (!orders.length) {
-      return (
-        <div className="container py-4">
-          <h4 className="mb-4">
-            <span className="fs-4 fw-medium">Product /</span> New Orders
-          </h4>
-          <div className="card shadow-sm">
-            <div className="card-body text-center py-5">
-              <Package size={48} className="text-muted mb-3" />
-              <h5 className="text-muted">No Orders Available</h5>
-              <p className="text-muted mb-0">There are currently no new orders to display.</p>
-            </div>
-          </div>
-        </div>
-      );
-    }
+      </div>
+    );
+  }
 
   return (
     <div className="container py-4">
       <h4 className="mb-4">
-        <span className="fs-4 fw-medium">Product /</span> New Orders
+        <span className="fs-4 fw-medium">Product /</span> Accepted Orders
       </h4>
 
       {/* Orders Container */}
@@ -211,10 +172,20 @@ const OrderDetailsDialog = () => {
                   <div className="col-md-3">
                     <h5 className="card-title mb-1">Order #{order.orderId}</h5>
                     <p className="text-muted small mb-2">
-                      {new Date(order.orderDate).toLocaleString()}
+                      {new Date(order.acceptedDate || order.orderDate).toLocaleString()}
                     </p>
+                    {order.deliveryPartnerId && deliveryPartners[order.deliveryPartnerId] && (
+                      <div className="d-flex align-items-center mt-2">
+                        <User size={16} className="me-2 text-primary" />
+                        <div className="small">
+                          <strong>Delivery Partner:</strong><br />
+                          {deliveryPartners[order.deliveryPartnerId].firstName} {deliveryPartners[order.deliveryPartnerId].lastName}<br />
+                          <span className="text-muted">{deliveryPartners[order.deliveryPartnerId].phoneNumber}</span>
+                        </div>
+                      </div>
+                    )} 
                   </div>
-
+                  
                   {/* Delivery Info */}
                   <div className="col-md-3">
                     <div className="d-flex align-items-center mb-2">
@@ -242,7 +213,7 @@ const OrderDetailsDialog = () => {
                           <br />
                           {order.address.doorNo}, {order.address.landmark},
                           <br />
-                          {order.address.street}, {order.address.area}
+                          {order.address.street}, {order.address.area},
                           <br />
                           {order.address.city}, {order.address.district},
                           <br />
@@ -258,7 +229,7 @@ const OrderDetailsDialog = () => {
                       className="badge"
                       style={{
                         backgroundColor: getStatusColor(order.status),
-                        color: order.status?.toLowerCase() === 'order placed' ? '#000' : '#fff'
+                        color: '#fff'
                       }}
                     >
                       {order.status}
@@ -285,7 +256,7 @@ const OrderDetailsDialog = () => {
             <div className="modal-content">
               {/* Modal Header */}
               <div className="modal-header">
-                <h5 className="modal-title">Order Details</h5>
+                <h5 className="modal-title">Accepted Order Details</h5>
                 <button
                   type="button"
                   className="btn-close"
@@ -300,7 +271,7 @@ const OrderDetailsDialog = () => {
                   className="alert d-flex align-items-center"
                   style={{ 
                     backgroundColor: getStatusColor(selectedOrder.status),
-                    color: selectedOrder.status?.toLowerCase() === 'order placed' ? '#000' : '#fff'
+                    color: '#fff'
                   }}
                 >
                   <Package className="me-3" />
@@ -354,7 +325,7 @@ const OrderDetailsDialog = () => {
                             {selectedOrder.address.landmark},
                             <br />
                             {selectedOrder.address.street},{" "}
-                            {selectedOrder.address.area}
+                            {selectedOrder.address.area},
                             <br />
                             {selectedOrder.address.city},{" "}
                             {selectedOrder.address.district},
@@ -461,7 +432,7 @@ const OrderDetailsDialog = () => {
         </div>
       )}
     </div>
-  );
+  );    
 };
 
-export default OrderDetailsDialog;
+export default AcceptedOrdersDialog;

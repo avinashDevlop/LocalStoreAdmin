@@ -42,6 +42,7 @@ const categories = [
   { value: "Health-wellness", label: "Health & Wellness" },
   { value: "Stationery", label: "Stationery & Office Supplies" },
   { value: "Electronics", label: "Electronics & Accessories" },
+  { value: "Mobile-accessories", label: "Mobile Accessories" },
   { value: "Home-decor", label: "Home Decor" },
   { value: "Toys-games", label: "Toys & Games" },
   { value: "Kitchen-essentials", label: "Kitchen Essentials" },
@@ -86,6 +87,8 @@ const AdvancedProductForm = () => {
     tags: [],
   });
 
+  const [originalName, setOriginalName] = useState("");
+  const [originalCategory, setOriginalCategory] = useState("");
   const [images, setImages] = useState([]);
   const [errors, setErrors] = useState({});
   const [showPreview, setShowPreview] = useState(false);
@@ -112,6 +115,8 @@ const AdvancedProductForm = () => {
         bestSelling: editingProduct.bestSelling,
         tags: editingProduct.tags || [],
       });
+      setOriginalName(editingProduct.name);
+      setOriginalCategory(editingProduct.category);
 
       // Set existing images for preview
       setImages(
@@ -200,7 +205,7 @@ const AdvancedProductForm = () => {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setIsSubmitting(false);
-      return;
+      return; 
     }
 
     try {
@@ -263,6 +268,7 @@ const AdvancedProductForm = () => {
       };
 
       if (isEditing) {
+        await api.delete(`/Products/${originalCategory}/${originalName}.json`);
         await api.put(`/Products/${data.category}/${data.name}.json`, data);
         toast.success("Product updated successfully!", {
           onClose: () => navigate(`/Admin/AdminViewProduct`),
@@ -323,7 +329,7 @@ const AdvancedProductForm = () => {
                     type="text"
                     name="name"
                     value={productData.name}
-                    disabled={isEditing}
+                    // disabled={isEditing}
                     onChange={(e) => {
                       const capitalizeWords = (str) =>
                         str.replace(/\b\w/g, (char) => char.toUpperCase());
